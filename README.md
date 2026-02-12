@@ -7,33 +7,37 @@
 
 Get structured, schema-validated JSON from any LLM provider through one unified `generateObject()` function with automatic return type inference.
 
+## The Problem
+
+Many LLM providers support tool calling but **not** `response_format` / structured outputs. You pass a JSON schema and get back... free-form text, malformed JSON, or a refusal. Providers like Groq, Ollama, Claude, DeepSeek, Mistral, HuggingFace, and Alibaba all have this issue — their models can call tools with structured arguments, but won't reliably return structured JSON on their own.
+
+This library turns **tool calling into structured output**. Your JSON schema becomes a `provide_answer` tool definition. The model is forced to call it via `tool_choice`. The arguments are extracted, repaired with `jsonrepair`, validated against your schema, and retried up to 5 times on failure. You get clean, typed JSON back — regardless of how broken the provider's native structured output support is.
+
+For providers that actually support `response_format` natively (OpenAI, Grok, Perplexity, Cohere, GLM-4), the library uses it directly. Same API, same schema, same result — the strategy is picked per provider.
+
 ## Features
 
 - 12 LLM Providers: OpenAI, Claude, DeepSeek, Grok, Mistral, Perplexity, Cohere, Alibaba, Hugging Face, Ollama, GLM-4, Groq
+- Tool-calling as structured output: forces `provide_answer` tool with your schema on providers that lack `response_format`
 - Single Function API: one `generateObject()` call for all providers
 - Type Inference: return type derived from JSON schema via `InferFormat<T>` — works in plain JavaScript
-- Retry Logic: automatic retries with tool-forcing for unreliable providers (up to 5 attempts)
-- JSON Repair: malformed responses auto-fixed via `jsonrepair`
+- Retry Logic: automatic retries with tool-forcing (up to 5 attempts)
+- JSON Repair: malformed tool call arguments auto-fixed via `jsonrepair`
 - Schema Validation: required fields validated before returning
 
 ## Installation
 
 ```bash
-npm install json-inference
+npm install json-inference openai ollama groq-sdk
 ```
 
-Peer dependencies (install only the providers you need):
+All three SDK peer dependencies are required:
 
-```bash
-# OpenAI, Claude, DeepSeek, Mistral, Perplexity, Cohere, GLM-4
-npm install openai
-
-# Ollama
-npm install ollama
-
-# Groq
-npm install groq-sdk
-```
+| Package | Providers |
+|---------|-----------|
+| `openai` | OpenAI, Claude, DeepSeek, Mistral, Perplexity, Cohere, GLM-4 |
+| `ollama` | Ollama |
+| `groq-sdk` | Groq |
 
 ## Quick Start
 

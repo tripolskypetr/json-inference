@@ -1,6 +1,6 @@
 {
   "name": "json-inference",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Structured JSON output from 12 LLM providers with a single function call. Type-safe, retry-resilient, zero boilerplate.",
   "author": {
     "name": "Petr Tripolsky",
