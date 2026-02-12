@@ -63,3 +63,8 @@ import InferenceName from "./enum/InferenceName";
     GroqProvider,
   );
 }
+
+export { generateObject } from "./functions/generate.function";
+
+export { IOutlineParams } from "./interface/Provider.interface";
+export { InferenceName } from "./enum/InferenceName";
