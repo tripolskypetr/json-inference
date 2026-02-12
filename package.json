@@ -1,7 +1,7 @@
 {
   "name": "json-inference",
-  "version": "3.0.7",
-  "description": "Multi-provider LLM inference library for AI-powered trading strategies. Supports 10+ providers including OpenAI, Claude, DeepSeek, Grok, Mistral with unified API and automatic token rotation.",
+  "version": "1.0.0",
+  "description": "Structured JSON output from 12 LLM providers with a single function call. Type-safe, retry-resilient, zero boilerplate.",
   "author": {
     "name": "Petr Tripolsky",
     "email": "tripolskypetr@gmail.com",
@@ -15,6 +15,10 @@
   "homepage": "https://backtest-kit.github.io/documents/example_02_first_backtest.html",
   "keywords": [
     "llm",
+    "json",
+    "structured-output",
+    "inference",
+    "multi-provider",
     "openai",
     "claude",
     "deepseek",
@@ -24,19 +28,16 @@
     "cohere",
     "ollama",
     "huggingface",
+    "groq",
+    "glm4",
     "ai",
-    "machine-learning",
-    "trading-bot",
-    "algorithmic-trading",
-    "quantitative-trading",
-    "cryptocurrency",
-    "trading-signals",
-    "multi-provider",
-    "inference",
-    "structured-output",
-    "token-rotation",
-    "backtest",
-    "risk-management"
+    "json-schema",
+    "type-inference",
+    "tool-calling",
+    "response-format",
+    "json-repair",
+    "schema-validation",
+    "generateObject"
   ],
   "files": [
     "build",
@@ -65,15 +66,12 @@
     "default": "./build/index.cjs"
   },
   "devDependencies": {
-    "@huggingface/inference": "4.7.1",
-    "@langchain/core": "0.3.57",
-    "@langchain/xai": "0.0.2",
     "@rollup/plugin-typescript": "11.1.6",
     "@types/node": "22.9.0",
     "glob": "11.0.1",
+    "groq-sdk": "0.37.0",
     "ollama": "0.6.0",
     "openai": "4.97.0",
-    "groq-sdk": "0.37.0",
     "rimraf": "6.0.1",
     "rollup": "3.29.5",
     "rollup-plugin-dts": "6.1.1",
@@ -81,17 +79,12 @@
     "tslib": "2.7.0"
   },
   "peerDependencies": {
-    "@huggingface/inference": "^4.7.1",
-    "@langchain/core": "^0.3.57",
-    "@langchain/xai": "^0.0.2",
     "groq-sdk": "^0.37.0",
     "ollama": "^0.6.0",
-    "openai": "^4.97.0",
-    "typescript": "^5.0.0"
+    "openai": "^4.97.0"
   },
   "dependencies": {
     "functools-kit": "^1.0.95",
-    "get-moment-stamp": "^1.1.1",
     "jsonrepair": "^3.12.0"
   },
   "publishConfig": {

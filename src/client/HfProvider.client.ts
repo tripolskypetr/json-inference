@@ -1,10 +1,11 @@
 import { fetchApi, singleshot } from "functools-kit";
 import { jsonrepair } from "jsonrepair";
-import { get, set } from "lodash-es";
 import { ILogger } from "../interface/Logger.interface";
 import IProvider, { IOutlineParams } from "../interface/Provider.interface";
 import { MessageModel } from "../model/Message.model";
 import validateToolArguments from "../helpers/validateToolArguments";
+import set from "../utils/set";
+import get from "../utils/get";
 
 const MAX_ATTEMPTS = 5;
 
