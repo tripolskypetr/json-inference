@@ -2,6 +2,7 @@
 
 > Structured JSON output from 12 LLM providers with a single function call. Type-safe, retry-resilient, zero boilerplate.
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tripolskypetr/json-inference)
 [![npm](https://img.shields.io/npm/v/json-inference.svg?style=flat-square)](https://npmjs.org/package/json-inference)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue)]()
 
