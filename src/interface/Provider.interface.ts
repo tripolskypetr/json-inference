@@ -1,8 +1,8 @@
 import { FormatModel } from "../model/Format.model";
 import { MessageModel } from "../model/Message.model";
 
-export interface IOutlineParams {
-  format: FormatModel;
+export interface IOutlineParams<F extends FormatModel = FormatModel> {
+  format: F;
   messages: MessageModel[];
 }
 

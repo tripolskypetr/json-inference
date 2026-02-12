@@ -1,15 +1,16 @@
 import InferenceName from "../enum/InferenceName";
 import { Runner } from "../classes/Runner";
-import { IOutlineParams } from "src/interface/Provider.interface";
+import { FormatModel, InferFormat } from "../model/Format.model";
+import { IOutlineParams } from "../interface/Provider.interface";
 
-export const generateObject = async (
-  interenceName: InferenceName,
-  params: IOutlineParams,
+export const generateObject = async <F extends FormatModel>(
+  inferenceName: InferenceName,
+  params: IOutlineParams<F>,
   model: string,
   apiKey?: string,
-) => {
+): Promise<InferFormat<F>> => {
   const { content } = await Runner.getOutlineCompletion(
-    interenceName,
+    inferenceName,
     params,
     model,
     apiKey,
