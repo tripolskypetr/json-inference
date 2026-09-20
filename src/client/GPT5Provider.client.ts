@@ -3,6 +3,7 @@ import { jsonrepair } from "jsonrepair";
 import { ILogger } from "../interface/Logger.interface";
 import IProvider, { IOutlineParams } from "../interface/Provider.interface";
 import { MessageModel } from "../model/Message.model";
+import { toOpenAIMessages } from "../helpers/adaptMessages";
 
 export class GPT5Provider implements IProvider {
   constructor(readonly logger: ILogger) {}
@@ -23,7 +24,7 @@ export class GPT5Provider implements IProvider {
         : { type: "json_schema", json_schema: { schema: format } };
 
     const completion = await openai.chat.completions.create({
-      messages: messages as any,
+      messages: toOpenAIMessages(messages) as any,
       model,
       response_format: response_format as any,
     });

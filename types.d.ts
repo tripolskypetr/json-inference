@@ -115,6 +115,8 @@ type MessageRole = "assistant" | "system" | "user";
 interface MessageModel {
     role: MessageRole;
     content: string;
+    /** Attached images: raw base64 strings or data: URLs. Providers adapt them to their own wire format. */
+    images?: string[];
 }
 
 interface IOutlineParams<F extends FormatModel = FormatModel> {
@@ -124,4 +126,49 @@ interface IOutlineParams<F extends FormatModel = FormatModel> {
 
 declare const generateObject: <F extends FormatModel>(inferenceName: InferenceName, params: IOutlineParams<F>, model: string, apiKey?: string) => Promise<InferFormat<F>>;
 
-export { type FormatItems, type FormatModel, type FormatProperty, type IOutlineParams, type InferFormat, InferenceName, generateObject };
+interface ValidationResult<T = any> {
+    success: boolean;
+    data?: T;
+    error?: string;
+}
+declare const typeOf: (value: unknown) => string;
+declare const validateValue: (value: unknown, schema: any, path: string) => string | null;
+declare const validateToolArguments: <T = any>(parsedArguments: unknown, schema: FormatModel) => ValidationResult<T>;
+
+declare const toDataUrl: (image: string, mimeType?: string) => string;
+declare const stripDataUrl: (image: string) => string;
+/**
+ * Adapts messages to the OpenAI-compatible wire format.
+ * Messages without images pass through unchanged; messages with images
+ * become content-part arrays with text followed by image_url entries.
+ */
+declare const toOpenAIMessages: (messages: MessageModel[]) => ({
+    role: MessageRole;
+    content: string;
+} | {
+    role: MessageRole;
+    content: ({
+        type: string;
+        image_url: {
+            url: string;
+        };
+    } | {
+        type: string;
+        text: string;
+    })[];
+})[];
+/**
+ * Adapts messages to the Ollama wire format: content stays a plain string,
+ * images go to the separate images field as raw base64 (data: prefix stripped).
+ */
+declare const toOllamaMessages: (messages: MessageModel[]) => ({
+    role: MessageRole;
+    content: string;
+    images?: undefined;
+} | {
+    role: MessageRole;
+    content: string;
+    images: string[];
+})[];
+
+export { type FormatItems, type FormatModel, type FormatProperty, type IOutlineParams, type InferFormat, InferenceName, type MessageModel, type MessageRole, generateObject, stripDataUrl, toDataUrl, toOllamaMessages, toOpenAIMessages, typeOf, validateToolArguments, validateValue };

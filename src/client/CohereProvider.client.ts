@@ -4,6 +4,7 @@ import { str } from "functools-kit";
 import { ILogger } from "../interface/Logger.interface";
 import IProvider, { IOutlineParams } from "../interface/Provider.interface";
 import { MessageModel } from "../model/Message.model";
+import { toOpenAIMessages } from "../helpers/adaptMessages";
 
 export class CohereProvider implements IProvider {
   constructor(readonly logger: ILogger) {}
@@ -45,6 +46,12 @@ export class CohereProvider implements IProvider {
           messages[i - 1].content,
           messages[i].content
         );
+        if (messages[i].images || messages[i - 1].images) {
+          messages[i - 1].images = [
+            ...(messages[i - 1].images || []),
+            ...(messages[i].images || []),
+          ];
+        }
         messages.splice(i, 1);
       }
     }
@@ -56,7 +63,7 @@ export class CohereProvider implements IProvider {
         : { type: "json_schema", json_schema: { schema: format } };
 
     const completion = await cohere.chat.completions.create({
-      messages: messages as any,
+      messages: toOpenAIMessages(messages) as any,
       model,
       response_format: response_format as any,
     });

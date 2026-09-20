@@ -5,6 +5,7 @@ import { ILogger } from "../interface/Logger.interface";
 import IProvider, { IOutlineParams } from "../interface/Provider.interface";
 import { MessageModel } from "../model/Message.model";
 import validateToolArguments from "../helpers/validateToolArguments";
+import { toOpenAIMessages } from "../helpers/adaptMessages";
 import set from "../utils/set";
 import get from "../utils/get";
 
@@ -48,7 +49,7 @@ export class ClaudeProvider implements IProvider {
 
     const messages = [
       systemMessage,
-      ...rawMessages,
+      ...toOpenAIMessages(rawMessages),
     ];
 
     let attempt = 0;

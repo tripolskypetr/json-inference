@@ -69,3 +69,8 @@ export { generateObject } from "./functions/generate.function";
 export { IOutlineParams } from "./interface/Provider.interface";
 export { InferenceName } from "./enum/InferenceName";
 export { FormatModel, FormatProperty, FormatItems, InferFormat } from "./model/Format.model";
+
+export { typeOf, validateToolArguments, validateValue } from "./helpers/validateToolArguments";
+
+export { MessageModel, MessageRole } from "./model/Message.model";
+export { toOpenAIMessages, toOllamaMessages, toDataUrl, stripDataUrl } from "./helpers/adaptMessages";

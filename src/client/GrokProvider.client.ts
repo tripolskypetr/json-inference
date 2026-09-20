@@ -3,6 +3,7 @@ import { jsonrepair } from "jsonrepair";
 import { ILogger } from "../interface/Logger.interface";
 import IProvider, { IOutlineParams } from "../interface/Provider.interface";
 import { MessageModel } from "../model/Message.model";
+import { toOpenAIMessages } from "../helpers/adaptMessages";
 
 export class GrokProvider implements IProvider {
   constructor(readonly logger: ILogger) {
@@ -28,7 +29,7 @@ export class GrokProvider implements IProvider {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        messages,
+        messages: toOpenAIMessages(messages),
         model,
         max_tokens: 5_000,
         response_format: format,
