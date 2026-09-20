@@ -68,4 +68,4 @@ export { generateObject } from "./functions/generate.function";
 
 export { IOutlineParams } from "./interface/Provider.interface";
 export { InferenceName } from "./enum/InferenceName";
-export { FormatModel, FormatProperty, InferFormat } from "./model/Format.model";
+export { FormatModel, FormatProperty, FormatItems, InferFormat } from "./model/Format.model";
