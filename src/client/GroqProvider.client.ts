@@ -2,7 +2,7 @@ import Groq from "groq-sdk";
 import { jsonrepair } from "jsonrepair";
 import { singleshot } from "functools-kit";
 import { ILogger } from "../interface/Logger.interface";
-import IProvider, { IOutlineParams } from "../interface/Provider.interface";
+import IProvider, { IOutlineParams, ITextParams } from "../interface/Provider.interface";
 import { MessageModel } from "../model/Message.model";
 import validateToolArguments from "../helpers/validateToolArguments";
 import { toOpenAIMessages } from "../helpers/adaptMessages";
@@ -13,6 +13,28 @@ const MAX_ATTEMPTS = 3;
 
 export class GroqProvider implements IProvider {
   constructor(readonly logger: ILogger) {}
+
+  public async getTextCompletion(
+    params: ITextParams, model: string, apiKey: string
+  ): Promise<MessageModel> {
+    const { messages } = params;
+
+    const groq = new Groq({ apiKey });
+
+    this.logger.log("groqProvider getTextCompletion", { model });
+
+    const {
+      choices: [{ message }],
+    } = await groq.chat.completions.create({
+      model,
+      messages: toOpenAIMessages(messages) as any,
+    });
+
+    return {
+      role: "assistant" as const,
+      content: message.content || "",
+    };
+  }
 
   public async getOutlineCompletion(
     params: IOutlineParams, model: string, apiKey: string

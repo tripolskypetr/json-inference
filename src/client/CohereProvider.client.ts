@@ -2,12 +2,72 @@ import OpenAI from "openai";
 import { jsonrepair } from "jsonrepair";
 import { str } from "functools-kit";
 import { ILogger } from "../interface/Logger.interface";
-import IProvider, { IOutlineParams } from "../interface/Provider.interface";
+import IProvider, { IOutlineParams, ITextParams } from "../interface/Provider.interface";
 import { MessageModel } from "../model/Message.model";
 import { toOpenAIMessages } from "../helpers/adaptMessages";
 
 export class CohereProvider implements IProvider {
   constructor(readonly logger: ILogger) {}
+
+  public async getTextCompletion(
+    params: ITextParams, model: string, apiKey: string
+  ): Promise<MessageModel> {
+    const cohere = new OpenAI({
+      baseURL: "https://api.cohere.ai/compatibility/v1",
+      apiKey,
+    });
+
+    this.logger.log("cohereProvider getTextCompletion", { model });
+
+    const { messages: rawMessages } = params;
+
+    const messages: any[] = rawMessages
+      .filter(({ role }) => role === "user" || role === "assistant");
+
+    const systemPrompt = rawMessages
+      .filter(({ role }) => role === "system")
+      .reduce((acm, { content }) => str.newline(acm, content), "");
+
+    if (systemPrompt) {
+      messages.unshift({
+        role: "system",
+        content: systemPrompt,
+      });
+    }
+
+    // Merge consecutive user messages
+    for (let i = messages.length - 1; i > 0; i--) {
+      if (messages[i].role === "user" && messages[i - 1].role === "user") {
+        messages[i - 1].content = str.newline(
+          messages[i - 1].content,
+          messages[i].content
+        );
+        if (messages[i].images || messages[i - 1].images) {
+          messages[i - 1].images = [
+            ...(messages[i - 1].images || []),
+            ...(messages[i].images || []),
+          ];
+        }
+        messages.splice(i, 1);
+      }
+    }
+
+    const {
+      choices: [{ message }],
+    } = await cohere.chat.completions.create({
+      model,
+      messages: toOpenAIMessages(messages) as any,
+    });
+
+    if (message.refusal) {
+      throw new Error(message.refusal);
+    }
+
+    return {
+      role: "assistant" as const,
+      content: message.content || "",
+    };
+  }
 
   public async getOutlineCompletion(
     params: IOutlineParams, model: string, apiKey: string

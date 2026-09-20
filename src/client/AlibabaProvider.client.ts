@@ -1,7 +1,7 @@
 import { jsonrepair } from "jsonrepair";
 import { singleshot, fetchApi } from "functools-kit";
 import { ILogger } from "../interface/Logger.interface";
-import IProvider, { IOutlineParams } from "../interface/Provider.interface";
+import IProvider, { IOutlineParams, ITextParams } from "../interface/Provider.interface";
 import { MessageModel } from "../model/Message.model";
 import validateToolArguments from "../helpers/validateToolArguments";
 import { toOpenAIMessages } from "../helpers/adaptMessages";
@@ -14,6 +14,38 @@ const BASE_URL = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1";
 
 export class AlibabaProvider implements IProvider {
   constructor(readonly logger: ILogger) {}
+
+  public async getTextCompletion(
+    params: ITextParams, model: string, apiKey: string
+  ): Promise<MessageModel> {
+    const { messages } = params;
+
+    this.logger.log("alibabaProvider getTextCompletion", { model });
+
+    const {
+      choices: [{ message }],
+    } = await fetchApi(`${BASE_URL}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: toOpenAIMessages(messages),
+        enable_thinking: false,
+      }),
+    });
+
+    if (message.refusal) {
+      throw new Error(message.refusal);
+    }
+
+    return {
+      role: "assistant" as const,
+      content: message.content || "",
+    };
+  }
 
   public async getOutlineCompletion(
     params: IOutlineParams, model: string, apiKey: string

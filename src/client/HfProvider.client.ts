@@ -1,7 +1,7 @@
 import { fetchApi, singleshot } from "functools-kit";
 import { jsonrepair } from "jsonrepair";
 import { ILogger } from "../interface/Logger.interface";
-import IProvider, { IOutlineParams } from "../interface/Provider.interface";
+import IProvider, { IOutlineParams, ITextParams } from "../interface/Provider.interface";
 import { MessageModel } from "../model/Message.model";
 import validateToolArguments from "../helpers/validateToolArguments";
 import { toOpenAIMessages } from "../helpers/adaptMessages";
@@ -12,6 +12,37 @@ const MAX_ATTEMPTS = 5;
 
 export class HfProvider implements IProvider {
   constructor(readonly logger: ILogger) {}
+
+  public async getTextCompletion(
+    params: ITextParams, model: string, apiKey: string
+  ): Promise<MessageModel> {
+    const { messages } = params;
+
+    this.logger.log("hfProvider getTextCompletion", { model });
+
+    const {
+      choices: [{ message }],
+    } = await fetchApi("https://router.huggingface.co/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        messages: toOpenAIMessages(messages),
+        model,
+      }),
+    });
+
+    if (message.refusal) {
+      throw new Error(message.refusal);
+    }
+
+    return {
+      role: "assistant" as const,
+      content: message.content || "",
+    };
+  }
 
   public async getOutlineCompletion(
     params: IOutlineParams, model: string, apiKey: string

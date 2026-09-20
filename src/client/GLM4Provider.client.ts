@@ -1,12 +1,41 @@
 import OpenAI from "openai";
 import { jsonrepair } from "jsonrepair";
 import { ILogger } from "../interface/Logger.interface";
-import IProvider, { IOutlineParams } from "../interface/Provider.interface";
+import IProvider, { IOutlineParams, ITextParams } from "../interface/Provider.interface";
 import { MessageModel } from "../model/Message.model";
 import { toOpenAIMessages } from "../helpers/adaptMessages";
 
 export class GLM4Provider implements IProvider {
   constructor(readonly logger: ILogger) {}
+
+  public async getTextCompletion(
+    params: ITextParams, model: string, apiKey: string
+  ): Promise<MessageModel> {
+    const { messages } = params;
+
+    const openai = new OpenAI({
+      apiKey,
+      baseURL: "https://api.z.ai/api/paas/v4/",
+    });
+
+    this.logger.log("glm4Provider getTextCompletion", { model });
+
+    const {
+      choices: [{ message }],
+    } = await openai.chat.completions.create({
+      model,
+      messages: toOpenAIMessages(messages) as any,
+    });
+
+    if (message.refusal) {
+      throw new Error(message.refusal);
+    }
+
+    return {
+      role: "assistant" as const,
+      content: message.content || "",
+    };
+  }
 
   public async getOutlineCompletion(
     params: IOutlineParams, model: string, apiKey: string

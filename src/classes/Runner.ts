@@ -1,7 +1,7 @@
 import { memoize, ToolRegistry } from "functools-kit";
 
 import { ILogger } from "../interface/Logger.interface";
-import IProvider, { IOutlineParams } from "../interface/Provider.interface";
+import IProvider, { IOutlineParams, ITextParams } from "../interface/Provider.interface";
 import InferenceName from "../enum/InferenceName";
 import { MessageModel } from "../model/Message.model";
 
@@ -35,6 +35,16 @@ export class RunnerAdapter {
   ): Promise<MessageModel> => {
     const runner = this.getRunner(inferenceName);
     return await runner.getOutlineCompletion(params, model, apiKey);
+  };
+
+  public getTextCompletion = async (
+    inferenceName: InferenceName,
+    params: ITextParams,
+    model: string,
+    apiKey?: string
+  ): Promise<MessageModel> => {
+    const runner = this.getRunner(inferenceName);
+    return await runner.getTextCompletion(params, model, apiKey);
   };
 
   public registerRunner = (name: InferenceName, runner: RunnerClass) => {

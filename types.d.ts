@@ -123,8 +123,12 @@ interface IOutlineParams<F extends FormatModel = FormatModel> {
     format: F;
     messages: MessageModel[];
 }
+interface ITextParams {
+    messages: MessageModel[];
+}
 
 declare const generateObject: <F extends FormatModel>(inferenceName: InferenceName, params: IOutlineParams<F>, model: string, apiKey?: string) => Promise<InferFormat<F>>;
+declare const generateText: (inferenceName: InferenceName, params: ITextParams, model: string, apiKey?: string) => Promise<string>;
 
 interface ValidationResult<T = any> {
     success: boolean;
@@ -171,4 +175,4 @@ declare const toOllamaMessages: (messages: MessageModel[]) => ({
     images: string[];
 })[];
 
-export { type FormatItems, type FormatModel, type FormatProperty, type IOutlineParams, type InferFormat, InferenceName, type MessageModel, type MessageRole, generateObject, stripDataUrl, toDataUrl, toOllamaMessages, toOpenAIMessages, typeOf, validateToolArguments, validateValue };
+export { type FormatItems, type FormatModel, type FormatProperty, type IOutlineParams, type ITextParams, type InferFormat, InferenceName, type MessageModel, type MessageRole, generateObject, generateText, stripDataUrl, toDataUrl, toOllamaMessages, toOpenAIMessages, typeOf, validateToolArguments, validateValue };

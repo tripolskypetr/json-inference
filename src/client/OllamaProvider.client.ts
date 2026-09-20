@@ -2,7 +2,7 @@ import { Ollama } from "ollama";
 import { jsonrepair } from "jsonrepair";
 import { singleshot } from "functools-kit";
 import { ILogger } from "../interface/Logger.interface";
-import IProvider, { IOutlineParams } from "../interface/Provider.interface";
+import IProvider, { IOutlineParams, ITextParams } from "../interface/Provider.interface";
 import { MessageModel } from "../model/Message.model";
 import validateToolArguments from "../helpers/validateToolArguments";
 import { toOllamaMessages } from "../helpers/adaptMessages";
@@ -13,6 +13,31 @@ const MAX_ATTEMPTS = 3;
 
 export class OllamaProvider implements IProvider {
   constructor(readonly logger: ILogger) {}
+
+  public async getTextCompletion(
+    params: ITextParams, model: string, apiKey?: string
+  ): Promise<MessageModel> {
+    const { messages } = params;
+
+    const ollama = apiKey
+      ? new Ollama({
+          host: "https://ollama.com",
+          headers: { Authorization: `Bearer ${apiKey}` },
+        })
+      : new Ollama();
+
+    this.logger.log("ollamaProvider getTextCompletion", { model });
+
+    const response = await ollama.chat({
+      model,
+      messages: toOllamaMessages(messages),
+    });
+
+    return {
+      role: "assistant" as const,
+      content: response.message.content,
+    };
+  }
 
   public async getOutlineCompletion(
     params: IOutlineParams, model: string, apiKey?: string

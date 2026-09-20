@@ -6,8 +6,13 @@ export interface IOutlineParams<F extends FormatModel = FormatModel> {
   messages: MessageModel[];
 }
 
+export interface ITextParams {
+  messages: MessageModel[];
+}
+
 export interface IProvider {
   getOutlineCompletion(params: IOutlineParams, model: string, apiKey?: string): Promise<MessageModel>;
+  getTextCompletion(params: ITextParams, model: string, apiKey?: string): Promise<MessageModel>;
 }
 
 export default IProvider;

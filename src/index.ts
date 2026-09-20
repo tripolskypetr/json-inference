@@ -64,9 +64,9 @@ import InferenceName from "./enum/InferenceName";
   );
 }
 
-export { generateObject } from "./functions/generate.function";
+export { generateObject, generateText } from "./functions/generate.function";
 
-export { IOutlineParams } from "./interface/Provider.interface";
+export { IOutlineParams, ITextParams } from "./interface/Provider.interface";
 export { InferenceName } from "./enum/InferenceName";
 export { FormatModel, FormatProperty, FormatItems, InferFormat } from "./model/Format.model";
 

@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import { jsonrepair } from "jsonrepair";
 import { singleshot } from "functools-kit";
 import { ILogger } from "../interface/Logger.interface";
-import IProvider, { IOutlineParams } from "../interface/Provider.interface";
+import IProvider, { IOutlineParams, ITextParams } from "../interface/Provider.interface";
 import { MessageModel } from "../model/Message.model";
 import validateToolArguments from "../helpers/validateToolArguments";
 import { toOpenAIMessages } from "../helpers/adaptMessages";
@@ -13,6 +13,35 @@ const MAX_ATTEMPTS = 3;
 
 export class DeepseekProvider implements IProvider {
   constructor(readonly logger: ILogger) {}
+
+  public async getTextCompletion(
+    params: ITextParams, model: string, apiKey: string
+  ): Promise<MessageModel> {
+    const { messages } = params;
+
+    const deepseek = new OpenAI({
+      baseURL: "https://api.deepseek.com",
+      apiKey,
+    });
+
+    this.logger.log("deepseekProvider getTextCompletion", { model });
+
+    const {
+      choices: [{ message }],
+    } = await deepseek.chat.completions.create({
+      model,
+      messages: toOpenAIMessages(messages) as any,
+    });
+
+    if (message.refusal) {
+      throw new Error(message.refusal);
+    }
+
+    return {
+      role: "assistant" as const,
+      content: message.content || "",
+    };
+  }
 
   public async getOutlineCompletion(
     params: IOutlineParams, model: string, apiKey: string
